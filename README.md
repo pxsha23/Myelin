@@ -2,8 +2,6 @@
 
 Myelin is an AI-powered personal knowledge and productivity OS. Store your projects, ideas, habits, and goals as nodes on a brain-shaped map. The AI reads everything you've stored and helps you brainstorm, improve, schedule, and reflect — while tracking your mood and predicting burnout before it happens.
 
-> Built for Google Gen AI Academy APAC — Meet the Builders 2026
-
 ---
 
 ## ✨ Features

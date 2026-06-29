@@ -1,9 +1,23 @@
+# import chromadb
+# from sentence_transformers import SentenceTransformer
+# import uuid
+
+# model = SentenceTransformer("all-MiniLM-L6-v2")
+# chroma_client = chromadb.Client()
+
+
 import chromadb
 from sentence_transformers import SentenceTransformer
 import uuid
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
+_model = None
 chroma_client = chromadb.Client()
+
+def get_model():
+    global _model
+    if _model is None:
+        _model = SentenceTransformer("all-MiniLM-L6-v2")
+    return _model
 
 def get_or_create_collection(user_id: str):
     return chroma_client.get_or_create_collection(
@@ -14,7 +28,8 @@ def get_or_create_collection(user_id: str):
 def embed_node(user_id: str, node_id: str, label: str, type: str, description: str = "") -> str:
     collection = get_or_create_collection(user_id)
     text = f"{label} {type} {description}"
-    embedding = model.encode(text).tolist()
+    # embedding = model.encode(text).tolist()
+    embedding = get_model().encode(text).tolist()
     chroma_id = str(uuid.uuid4())
     collection.add(
         ids=[chroma_id],

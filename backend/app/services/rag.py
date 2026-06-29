@@ -1,9 +1,9 @@
-from app.services.embeddings import get_or_create_collection, model
+from app.services.embeddings import get_or_create_collection, get_model
 
 def retrieve_relevant_nodes(user_id: str, query: str, top_k: int = 5) -> list:
     try:
         collection = get_or_create_collection(user_id)
-        query_embedding = model.encode(query).tolist()
+        query_embedding = get_model().encode(query).tolist()
         results = collection.query(
             query_embeddings=[query_embedding],
             n_results=min(top_k, collection.count())

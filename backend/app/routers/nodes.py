@@ -22,11 +22,12 @@ async def create_node(
     db: Session = Depends(get_db)
 ):
     node_id = str(uuid.uuid4())
-    chroma_id = embed_node(
-        user_id, node_id,
-        node.label, node.type,
-        node.description or ""
-    )
+    embedding = embed_node(node.label, node.type, node.description or "")
+    # chroma_id = embed_node(
+    #     user_id, node_id,
+    #     node.label, node.type,
+    #     node.description or ""
+    # )
     db_node = Node(
         id=node_id,
         user_id=user_id,
@@ -35,7 +36,8 @@ async def create_node(
         description=node.description,
         rx=node.rx,
         ry=node.ry,
-        chroma_id=chroma_id
+        # chroma_id=chroma_id
+        embedding=embedding
     )
     db.add(db_node)
     db.commit()

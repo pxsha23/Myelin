@@ -8,17 +8,19 @@
 
 from google import genai
 from app.config import GEMINI_API_KEY
-import uuid
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 
-def get_embedding(text: str) -> list[float]:
+def get_embedding(text: str) -> list:
     result = client.models.embed_content(
         model="models/embedding-001",
         contents=text
     )
     return result.embeddings[0].values
 
-def embed_node(user_id: str, node_id: str, label: str, type: str, description: str = "") -> list[float]:
+def embed_node(label: str, type: str, description: str = "") -> list:
     text = f"{label} {type} {description}"
-    return get_embedding(text)
+    try:
+        return get_embedding(text)
+    except Exception:
+        return None

@@ -6,42 +6,19 @@
 # chroma_client = chromadb.Client()
 
 
-import chromadb
-from sentence_transformers import SentenceTransformer
+from google import genai
+from app.config import GEMINI_API_KEY
 import uuid
 
-_model = None
-chroma_client = chromadb.Client()
+client = genai.Client(api_key=GEMINI_API_KEY)
 
-def get_model():
-    global _model
-    if _model is None:
-        _model = SentenceTransformer("all-MiniLM-L6-v2")
-    return _model
-
-def get_or_create_collection(user_id: str):
-    return chroma_client.get_or_create_collection(
-        name=f"brain_{user_id}",
-        metadata={"hnsw:space": "cosine"}
+def get_embedding(text: str) -> list[float]:
+    result = client.models.embed_content(
+        model="models/embedding-001",
+        contents=text
     )
+    return result.embeddings[0].values
 
-def embed_node(user_id: str, node_id: str, label: str, type: str, description: str = "") -> str:
-    collection = get_or_create_collection(user_id)
+def embed_node(user_id: str, node_id: str, label: str, type: str, description: str = "") -> list[float]:
     text = f"{label} {type} {description}"
-    # embedding = model.encode(text).tolist()
-    embedding = get_model().encode(text).tolist()
-    chroma_id = str(uuid.uuid4())
-    collection.add(
-        ids=[chroma_id],
-        embeddings=[embedding],
-        documents=[text],
-        metadatas=[{"node_id": node_id, "label": label, "type": type}]
-    )
-    return chroma_id
-
-def delete_node_embedding(user_id: str, chroma_id: str):
-    try:
-        collection = get_or_create_collection(user_id)
-        collection.delete(ids=[chroma_id])
-    except Exception:
-        pass
+    return get_embedding(text)

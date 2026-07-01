@@ -1,26 +1,19 @@
-from app.services.embeddings import get_or_create_collection, get_model
+import numpy as np
+from app.services.embeddings import get_embedding
 
-def retrieve_relevant_nodes(user_id: str, query: str, top_k: int = 5) -> list:
+def cosine_sim(a, b):
+    a, b = np.array(a), np.array(b)
+    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
+
+def retrieve_relevant_nodes(user_id: str, query: str, all_nodes: list, top_k: int = 5) -> list:
     try:
-        collection = get_or_create_collection(user_id)
-        query_embedding = get_model().encode(query).tolist()
-        results = collection.query(
-            query_embeddings=[query_embedding],
-            n_results=min(top_k, collection.count())
-        )
-        if not results["metadatas"][0]:
-            return []
-        return [
-            {
-                "node_id": m["node_id"],
-                "label": m["label"],
-                "type": m["type"],
-                "score": 1 - d
-            }
-            for m, d in zip(
-                results["metadatas"][0],
-                results["distances"][0]
-            )
+        query_emb = get_embedding(query)
+        scored = [
+            {"node_id": n.id, "label": n.label, "type": n.type,
+             "score": cosine_sim(query_emb, n.embedding)}
+            for n in all_nodes if n.embedding
         ]
+        scored.sort(key=lambda x: x["score"], reverse=True)
+        return scored[:top_k]
     except Exception:
         return []

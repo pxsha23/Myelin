@@ -6,7 +6,7 @@ import uuid
 from app.database import get_db
 from app.models.node import Node
 from app.schemas.node import NodeCreate, NodeUpdate, NodeResponse
-from app.services.embeddings import embed_node, delete_node_embedding
+# from app.services.embeddings import embed_node, delete_node_embedding
 from app.services.gemini import brainstorm_node, improve_node
 
 router = APIRouter(prefix="/nodes", tags=["nodes"])
@@ -59,16 +59,16 @@ def update_node(
     db.refresh(node)
     return node
 
-@router.delete("/{node_id}")
-def delete_node(node_id: str, db: Session = Depends(get_db)):
-    node = db.query(Node).filter(Node.id == node_id).first()
-    if not node:
-        raise HTTPException(status_code=404, detail="Node not found")
-    if node.chroma_id:
-        delete_node_embedding(node.user_id, node.chroma_id)
-    db.delete(node)
-    db.commit()
-    return {"deleted": node_id}
+# @router.delete("/{node_id}")
+# def delete_node(node_id: str, db: Session = Depends(get_db)):
+#     node = db.query(Node).filter(Node.id == node_id).first()
+#     if not node:
+#         raise HTTPException(status_code=404, detail="Node not found")
+#     if node.chroma_id:
+#         delete_node_embedding(node.user_id, node.chroma_id)
+#     db.delete(node)
+#     db.commit()
+#     return {"deleted": node_id}
 
 @router.post("/{node_id}/brainstorm")
 async def brainstorm(node_id: str, db: Session = Depends(get_db)):

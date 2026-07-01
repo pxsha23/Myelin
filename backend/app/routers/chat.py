@@ -17,7 +17,7 @@ class ChatRequest(BaseModel):
 @router.post("/")
 async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     # RAG — retrieve relevant nodes
-    relevant = retrieve_relevant_nodes(request.user_id, request.message)
+    relevant = retrieve_relevant_nodes(request.user_id, request.message,db)
 
     # if RAG returns something use it, else use all nodes
     if relevant:

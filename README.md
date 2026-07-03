@@ -30,12 +30,10 @@ Built for the **Google Gen AI Academy APAC — 1000 Builders program.**
 
 ## 🏗️ Architecture: Why two tracks
 
-Myelin ships as a **lightweight production build** and is developed further as a **full-featured local build**. This is a deliberate split, not a limitation:
+Myelin ships as a **lightweight production build** and is developed further as a **full-featured local build**. This is a deliberate split:
 
 - **Production** (Vercel + Render + Supabase, all free tier) runs the core AI loop — brain map, RAG chat, brainstorm/improve, mood tracking — kept intentionally lean so it deploys reliably on free-tier infrastructure.
 - **Local development** is where heavier components (vector search, LangChain orchestration, ML models, background workers) get built and tested against real data before any of it is considered for production. Some of these — like a local vector index or a persistent job queue — need resources free-tier hosting doesn't reliably offer, so they stay local-first by design rather than being force-fit into a constrained deploy.
-
-This keeps the live demo stable while the AI/ML surface area grows underneath it.
 
 ---
 

@@ -9,12 +9,17 @@ from app.routers import nodes, chat, auth
 from app.routers import mood as mood_router
 
 Base.metadata.create_all(bind=engine)
-
 app = FastAPI(title="Myelin API", version="1.0.0")
+
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "https://myelin-mu.vercel.app",
+    "https://myelin-git-main-piyushas-projects-d186f011.vercel.app",
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -22,10 +27,12 @@ app.add_middleware(
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
+    origin = request.headers.get("origin")
+    headers = {"Access-Control-Allow-Origin": origin} if origin in ALLOWED_ORIGINS else {}
     return JSONResponse(
         status_code=500,
         content={"detail": str(exc)},
-        headers={"Access-Control-Allow-Origin": "http://localhost:5173"}
+        headers=headers
     )
 
 app.include_router(auth.router)
